@@ -1,12 +1,14 @@
 import datetime
 import hashlib
 
+import boto3
 
-class User:
-    def __init__(self, uid, uname, uage):
-        self.u_id = uid
-        self.u_name = uname
-        self.u_age = uage
+
+# class User:
+#     def __init__(self, uid, uname, uage):
+#         self.u_id = uid
+#         self.u_name = uname
+#         self.u_age = uage
 
 
 class Block:
@@ -17,7 +19,11 @@ class Block:
         self.nonce = 0
         self.hash = self.calculate_hash()
         self.miner_id = None
+        self.transactions = []
         self.owners = {}
+
+    def __str__(self):
+        return str(self.timestamp) + "  " + str(self.miner_id)
 
     def calculate_hash(self):
         str_transactions = ""
@@ -39,9 +45,9 @@ class Block:
 
 
 class Transaction:
-    def __init__(self, table_ptr, description, data_cost, owner_id):
+    def __init__(self, table_name, description, data_cost, owner_id):
         self.owner_id = owner_id
-        self.table_ptr = table_ptr
+        self.table_name = table_name
         self.description = description
         self.data_cost = data_cost
 
@@ -64,6 +70,9 @@ class Blockchain:
         new_block = Block(datetime.datetime.now(), self.pending_transactions, latest_block.hash)
         new_block.mine_block(self.difficulty, reward_address)
 
+        for trans in self.pending_transactions:
+            new_block.transactions.append(trans)
+
         self.pending_transactions = []
 
         ############################
@@ -84,15 +93,30 @@ class Blockchain:
         return True
         # catch it , but this condition catches it
 
-    def add_data(self, description, table_ptr, cost, user_id):
-        trans_obj = Transaction(table_ptr, description, cost, user_id)
+    def add_data(self, table_name, description, cost, user_id):
+        trans_obj = Transaction(table_name, description, cost, user_id)
         self.pending_transactions.append(trans_obj)
 
+    def print_details(self):
+        for block in self.chain:
+            print(block)
+            num = 1
+            for trans in block.transactions:
+                print("\n")
+                print(trans.table_name + " : " + trans.description)
+                table = dynamodb.Table(trans.table_name)
+                # print(json.dumps(table.scan(), indent=4))
+                print(table.scan())
+                num += 1
 
+
+dynamodb = boto3.resource('dynamodb')
 blockchain = Blockchain()
+table1_name = "Forum"
+table2_name = "ProductCatalog"
 print("Mining block 1 ........")
-blockchain.add_data("Prajwal", "vsfgd", 60, 5)
+blockchain.add_data(table1_name, "This table describes the features of some forums", 60, 5)
 print("Mining block 2 ........")
-blockchain.add_data("Athilesh", "vsgfdg", 56, 6)
+blockchain.add_data(table2_name, "This table has sample data by Amazon", 56, 6)
 blockchain.mine_pending_transactions(5)
-print(blockchain.chain)
+blockchain.print_details()
