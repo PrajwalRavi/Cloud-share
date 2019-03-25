@@ -4,11 +4,19 @@ import hashlib
 import boto3
 
 
-# class User:
-#     def __init__(self, uid, uname, uage):
-#         self.u_id = uid
-#         self.u_name = uname
-#         self.u_age = uage
+class User:
+    def __init__(self, uid):
+        self.user_id = uid
+
+    def view_user(self):
+        print("\nUser " + str(self.user_id) + "'s Transactions:\n")
+        for block in blockchain.chain:
+            for trans in block.transactions:
+                if trans.owner_id == self.user_id:
+                    print("Table name: " + trans.table_name)
+                    print("Description: " + trans.description)
+                    print("Cost: $" + str(trans.data_cost))
+                    print("\n")
 
 
 class Block:
@@ -93,8 +101,8 @@ class Blockchain:
         return True
         # catch it , but this condition catches it
 
-    def add_data(self, table_name, description, cost, user_id):
-        trans_obj = Transaction(table_name, description, cost, user_id)
+    def add_data(self, table_name, description, cost, user):
+        trans_obj = Transaction(table_name, description, cost, user.user_id)
         self.pending_transactions.append(trans_obj)
 
     def print_details(self):
@@ -105,18 +113,26 @@ class Blockchain:
                 print("\n")
                 print(trans.table_name + " : " + trans.description)
                 table = dynamodb.Table(trans.table_name)
-                # print(json.dumps(table.scan(), indent=4))
                 print(table.scan())
                 num += 1
 
 
 dynamodb = boto3.resource('dynamodb')
+
 blockchain = Blockchain()
+
 table1_name = "Forum"
 table2_name = "ProductCatalog"
+
+user1 = User(1)
+user2 = User(2)
+
 print("Mining block 1 ........")
-blockchain.add_data(table1_name, "This table describes the features of some forums", 60, 5)
+blockchain.add_data(table1_name, "This table describes the features of some forums", 60, user1)
+
 print("Mining block 2 ........")
-blockchain.add_data(table2_name, "This table has sample data by Amazon", 56, 6)
+blockchain.add_data(table2_name, "This table has sample data by Amazon", 56, user1)
+
 blockchain.mine_pending_transactions(5)
-blockchain.print_details()
+# blockchain.print_details()
+user1.view_user()
