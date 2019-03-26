@@ -1,4 +1,5 @@
 import datetime
+import sys
 
 import boto3
 
@@ -17,23 +18,19 @@ class Blockchain:
     def create_genesis_block():
         return Block(datetime.datetime.now(), "Genesis Block", "0")
 
-    def get_latest_block(self):
-        return self.chain[-1]
-
-    def mine_pending_transactions(self, reward_address):  # reward address is the user id of the miner
-        latest_block = self.get_latest_block()
+    def mine_pending_transactions(self, miner):  # reward address is the user object of the miner
+        latest_block = self.chain[-1]
         new_block = Block(datetime.datetime.now(), self.pending_transactions, latest_block.hash)
-        new_block.mine_block(self.difficulty, reward_address)
+        new_block.mine_block(self.difficulty, miner)
 
         for trans in self.pending_transactions:
             new_block.transactions.append(trans)
 
         self.pending_transactions = []
 
-        ############################
-        # Zero knowledge proof
+        # if new_block.verify_block():
+        # Uncomment on finishing zero-knowledge proof stuff
         self.chain.append(new_block)
-        ############################
 
     def verify_chain(self):
         for i in range(1, len(self.chain)):
@@ -53,17 +50,15 @@ class Blockchain:
         self.pending_transactions.append(trans_obj)
 
     def print_details(self):
-        for block in self.chain:
+        for block in self.chain[1:]:
             print(block)
-            num = 1
             for trans in block.transactions:
                 print("\n")
                 print(trans.table_name + " : " + trans.description)
                 table = dynamodb.Table(trans.table_name)
                 print(table.scan())
-                num += 1
 
-    def purchase(self, user):
+    def purchase_data(self, user):
         print("\nID \t\t   Cost \t\t Description")
         data_cost = {}
         for block in self.chain:
@@ -75,9 +70,20 @@ class Blockchain:
         print("\nEnter ID of the data you would like to buy: ")
         option = input().strip()
         while option not in data_cost.keys():
+            print("Please enter from the available options only.")
             option = input().strip()
+        print("Please wait while the transaction is completed")
+        for _ in range(10):
+            print("*", end="")
+            sys.stdout.flush()
+            # time.sleep(0.5)
+        print("\nTransaction success!!")
 
-#     TO-DO : CLEAN UP OLD CODE TO USE User OBJECT INSTEAD OF ID. THEN WRITE CODE TO PERFORM TRANSACTIONS.
+        for block in self.chain:
+            for transaction in block.transactions:
+                if transaction.transaction_id == option:
+                    user.purchases.append(transaction)
+                    break
 
 
 if __name__ == "__main__":
@@ -97,7 +103,10 @@ if __name__ == "__main__":
     print("Mining block 2 ........")
     blockchain.add_data(table2_name, "This table has sample data by Amazon.", 56, user1)
 
-    blockchain.mine_pending_transactions(5)
+    blockchain.mine_pending_transactions(user1)
     # blockchain.print_details()
-    # user1.view_user(blockchain)
-    blockchain.purchase(user2)
+    user1.view_user(blockchain)
+    blockchain.purchase_data(user1)
+    blockchain.purchase_data(user1)
+    blockchain.purchase_data(user1)
+    user1.view_user(blockchain)
