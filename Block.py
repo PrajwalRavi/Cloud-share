@@ -1,4 +1,5 @@
 import hashlib
+import random
 
 
 class Block:
@@ -36,8 +37,27 @@ class Block:
             self.beneficiaries[transaction.transaction_id] = transaction.owner.user_id
 
     def verify_block(self):
-        pass
+        check = 0
+        for transaction in self.transactions:
+            A = self.miner.publicA
+            p = self.miner.publicP
+            B = (A ** transaction.data_cost) % p
 
-        ############################
-        # Zero knowledge proof
-        ############################
+            for num in range(0, 1):
+                print("\nVerification - Round " + str(num + 1))
+                print("\nChoose random r from 0 to p-1")
+                print("Calculate A^r(mod p) and enter the value: ")  # 9
+                h = int(input())
+                b = random.randint(0, 1)
+                b = 0
+                print("\nAssume the bit b = " + str(b))
+                print("Calculate (r+bx)(mod(p-1)) taking x = cost of product, and enter the value: ")  # 6 if b=0
+                s = int(input())
+                if ((A ** s) % p) == ((h * (B ** b)) % p):
+                    check = check + 1
+
+        if check == 1 * len(self.transactions):
+            print("Identity successfully verified.")
+            return True
+        else:
+            return False

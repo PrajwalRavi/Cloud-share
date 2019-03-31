@@ -8,6 +8,8 @@ class User:
         self.user_id = Transaction.generate_random_id()
         self.wallet_address = hashlib.sha256(self.user_id.encode())
         self.purchases = []
+        self.publicA = 2
+        self.publicP = 11
 
     def view_user(self, blockchain):
         print("\nUser " + str(self.user_id) + "'s Transactions:\n")

@@ -28,9 +28,8 @@ class Blockchain:
 
         self.pending_transactions = []
 
-        # if new_block.verify_block():
-        # Uncomment on finishing zero-knowledge proof stuff
-        self.chain.append(new_block)
+        if new_block.verify_block():
+            self.chain.append(new_block)
 
     def verify_chain(self):
         for i in range(1, len(self.chain)):
@@ -55,8 +54,8 @@ class Blockchain:
             for trans in block.transactions:
                 print("\n")
                 print(trans.table_name + " : " + trans.description)
-                table = dynamodb.Table(trans.table_name)
-                print(table.scan())
+                # table = dynamodb.Table(trans.table_name)
+                # print(table.scan())
 
     def purchase_data(self, user):
         print("\nID \t\t   Cost \t\t Description")
@@ -87,7 +86,7 @@ class Blockchain:
 
 
 if __name__ == "__main__":
-    dynamodb = boto3.resource('dynamodb')
+    dynamodb = boto3.resource('dynamodb','us-east-2')
 
     blockchain = Blockchain()
 
@@ -105,8 +104,8 @@ if __name__ == "__main__":
 
     blockchain.mine_pending_transactions(user1)
     # blockchain.print_details()
-    user1.view_user(blockchain)
+    # user1.view_user(blockchain)
     blockchain.purchase_data(user1)
-    blockchain.purchase_data(user1)
-    blockchain.purchase_data(user1)
+    # blockchain.purchase_data(user1)
+    # blockchain.purchase_data(user1)
     user1.view_user(blockchain)
