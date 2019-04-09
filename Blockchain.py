@@ -1,5 +1,6 @@
 import datetime
 import sys
+import time
 
 import boto3
 
@@ -25,11 +26,8 @@ class Blockchain:
 
         for trans in self.pending_transactions:
             new_block.transactions.append(trans)
-
+        self.chain.append(new_block)
         self.pending_transactions = []
-
-        if new_block.verify_block():
-            self.chain.append(new_block)
 
     def verify_chain(self):
         for i in range(1, len(self.chain)):
@@ -46,7 +44,10 @@ class Blockchain:
 
     def add_data(self, table_name, description, cost, user):
         trans_obj = Transaction(table_name, description, cost, user)
-        self.pending_transactions.append(trans_obj)
+        if trans_obj.verify_transaction():
+            self.pending_transactions.append(trans_obj)
+        else:
+            print("Error")
 
     def print_details(self):
         for block in self.chain[1:]:
@@ -54,8 +55,8 @@ class Blockchain:
             for trans in block.transactions:
                 print("\n")
                 print(trans.table_name + " : " + trans.description)
-                # table = dynamodb.Table(trans.table_name)
-                # print(table.scan())
+                table = dynamodb.Table(trans.table_name)
+                print(table.scan())
 
     def purchase_data(self, user):
         print("\nID \t\t   Cost \t\t Description")
@@ -75,7 +76,7 @@ class Blockchain:
         for _ in range(10):
             print("*", end="")
             sys.stdout.flush()
-            # time.sleep(0.5)
+            time.sleep(0.5)
         print("\nTransaction success!!")
 
         for block in self.chain:
@@ -86,7 +87,7 @@ class Blockchain:
 
 
 if __name__ == "__main__":
-    dynamodb = boto3.resource('dynamodb','us-east-2')
+    dynamodb = boto3.resource('dynamodb', 'us-east-2')
 
     blockchain = Blockchain()
 
@@ -96,16 +97,20 @@ if __name__ == "__main__":
     user1 = User()
     user2 = User()
 
-    print("Mining block 1 ........")
+    print("Adding transaction 1 ........")
     blockchain.add_data(table1_name, "This table describes the features of some forums.", 60, user1)
 
-    print("Mining block 2 ........")
+    print("Adding transaction 2 ........")
     blockchain.add_data(table2_name, "This table has sample data by Amazon.", 56, user1)
 
+    print("Mining block....")
     blockchain.mine_pending_transactions(user1)
-    # blockchain.print_details()
+
+    print("Blockchain details: ")
+    blockchain.print_details()
     # user1.view_user(blockchain)
-    blockchain.purchase_data(user1)
     # blockchain.purchase_data(user1)
     # blockchain.purchase_data(user1)
+    # blockchain.purchase_data(user1)
+    print("User1's details:")
     user1.view_user(blockchain)
