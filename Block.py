@@ -15,7 +15,8 @@ class Block:
 
     def __str__(self):
         assert self.miner is not None
-        return str(self.timestamp) + "  " + str(self.miner.user_id)
+        block_details = "Block creation time: " + str(self.timestamp) + "\nMined by: " + str(self.miner.user_id)
+        return block_details
 
     def calculate_hash(self):
         str_transactions = ""

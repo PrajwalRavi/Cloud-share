@@ -12,7 +12,7 @@ from User import User
 class Blockchain:
     def __init__(self):
         self.chain = [self.create_genesis_block()]
-        self.difficulty = 4
+        self.difficulty = 5
         self.pending_transactions = []
 
     @staticmethod
@@ -37,8 +37,10 @@ class Blockchain:
             if curr_block.calculate_hash() != curr_block.hash or curr_block.prev_hash != prev_block.hash:
                 # 1st cond : Checks current block's integrity
                 # 2nd cond : If a user changes data of a block and calls calculate_hash(), the previous condn cannot
+                print("\n********Blockchain corrupted.*************")
                 return False
 
+        print("\n********Blockchain secure and verified.*************")
         return True
         # catch it , but this condition catches it
 
@@ -51,14 +53,17 @@ class Blockchain:
 
     def print_details(self):
         for block in self.chain[1:]:
+            print("\n")
             print(block)
+            print("\nTransactions in block:")
             for trans in block.transactions:
-                print("\n")
                 print(trans.table_name + " : " + trans.description)
                 table = dynamodb.Table(trans.table_name)
                 print(table.scan())
+                print("\n")
 
     def purchase_data(self, user):
+        print("***************************************************************************************************************************************************************************************")
         print("\nID \t\t   Cost \t\t Description")
         data_cost = {}
         for block in self.chain:
@@ -97,20 +102,22 @@ if __name__ == "__main__":
     user1 = User()
     user2 = User()
 
-    print("Adding transaction 1 ........")
+    print("Adding Transaction 1 ........")
     blockchain.add_data(table1_name, "This table describes the features of some forums.", 60, user1)
 
     print("Adding transaction 2 ........")
-    blockchain.add_data(table2_name, "This table has sample data by Amazon.", 56, user1)
-
+    blockchain.add_data(table2_name, "This table has sample data by Amazon.", 60, user1)
+    print("***************************************************************************")
     print("Mining block....")
     blockchain.mine_pending_transactions(user1)
+    print("Finished mining.")
+    print("***************************************************************************")
 
     print("Blockchain details: ")
     blockchain.print_details()
-    # user1.view_user(blockchain)
-    # blockchain.purchase_data(user1)
-    # blockchain.purchase_data(user1)
-    # blockchain.purchase_data(user1)
+    blockchain.verify_chain()
+    blockchain.purchase_data(user1)
+    blockchain.purchase_data(user1)
+    print("*********************************************************************************************************************************")
     print("User1's details:")
     user1.view_user(blockchain)

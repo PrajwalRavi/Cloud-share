@@ -12,21 +12,25 @@ class User:
         self.publicP = 11
 
     def view_user(self, blockchain):
-        print("\nUser " + str(self.user_id) + "'s Transactions:\n")
+        print("***************************************************************************")
+        print("User ID:" + str(self.user_id))
+        print("Transactions:")
         for block in blockchain.chain:
             for trans in block.transactions:
                 if trans.owner.user_id == self.user_id:
+                    print("****************************************")
                     print("Table name: " + trans.table_name)
                     print("Description: " + trans.description)
                     print("Cost: $" + str(trans.data_cost))
                     print("\n")
 
-        print("\nUser " + str(self.user_id) + "'s Purchases:")
+        print("User " + str(self.user_id) + "'s Purchases:")
         if len(self.purchases) == 0:
             print("No purchases till date")
         else:
             num = 1
             for transaction in self.purchases:
-                print(str(num) + ") " + str(transaction.transaction_id) + " " + str(transaction.table_name) + " " + str(
-                    transaction.description))
+                print("****************************************")
+                print(str(num) + ") " + str(transaction))
                 num += 1
+        print("*****************************************************************************************************************")

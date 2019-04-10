@@ -31,6 +31,11 @@ class Transaction:
         print("Identity successfully verified.")
         return True
 
+    def __str__(self):
+        transaction_detail = "Transaction ID: " + str(self.transaction_id) + "\nTable name: " + str(
+            self.table_name) + "\nDescription" + self.description + "\n"
+        return transaction_detail
+
     @staticmethod
     def generate_random_id():
         return str(hex(random.randrange(20000, 50000, 3)))[2:]
