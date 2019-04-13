@@ -34,4 +34,4 @@ class Block:
         # Owner and the miner to be paid on purchase_data of the transaction
         self.miner = miner
         for transaction in self.pending_transactions:
-            self.beneficiaries[transaction.transaction_id] = transaction.owner.user_id
+            transaction.benefeciaries.append(miner)

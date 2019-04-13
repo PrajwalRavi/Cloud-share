@@ -19,7 +19,7 @@ class Blockchain:
     def create_genesis_block():
         return Block(datetime.datetime.now(), "Genesis Block", "0")
 
-    def mine_pending_transactions(self, miner):  # reward address is the user object of the miner
+    def mine_pending_transactions(self, miner):
         latest_block = self.chain[-1]
         new_block = Block(datetime.datetime.now(), self.pending_transactions, latest_block.hash)
         new_block.mine_block(self.difficulty, miner)
@@ -63,7 +63,8 @@ class Blockchain:
                 print("\n")
 
     def purchase_data(self, user):
-        print("***************************************************************************************************************************************************************************************")
+        print(
+            "***************************************************************************************************************************************************************************************")
         print("\nID \t\t   Cost \t\t Description")
         data_cost = {}
         for block in self.chain:
@@ -104,7 +105,11 @@ if __name__ == "__main__":
 
     print("Adding Transaction 1 ........")
     blockchain.add_data(table1_name, "This table describes the features of some forums.", 60, user1)
-
+    print("***************************************************************************")
+    print("Mining block....")
+    blockchain.mine_pending_transactions(user1)
+    print("Finished mining.")
+    print("***************************************************************************")
     print("Adding transaction 2 ........")
     blockchain.add_data(table2_name, "This table has sample data by Amazon.", 60, user1)
     print("***************************************************************************")
@@ -118,6 +123,7 @@ if __name__ == "__main__":
     blockchain.verify_chain()
     blockchain.purchase_data(user1)
     blockchain.purchase_data(user1)
-    print("*********************************************************************************************************************************")
+    print(
+        "*********************************************************************************************************************************")
     print("User1's details:")
     user1.view_user(blockchain)

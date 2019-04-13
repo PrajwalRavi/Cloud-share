@@ -8,6 +8,7 @@ class Transaction:
         self.table_name = table_name
         self.description = description
         self.data_cost = data_cost
+        self.benefeciaries = [self.owner]
 
     def verify_transaction(self):
         A = self.owner.publicA
