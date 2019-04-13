@@ -12,7 +12,7 @@ by cloud storage to share the health-related information in a
 secure and transparent manner.
 
 ### Architecture 
-* DynamoDb provided by Amazon AWS was used to store the data to be shared.
+* DynamoDB provided by Amazon AWS was used to store the data to be shared.
 * Just the table name and a short description was stored in the blocks in the blockchain.
 
 ![architecture](https://github.com/PrajwalRavi/Blockchain/blob/master/architecture.png)
