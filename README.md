@@ -15,7 +15,7 @@ secure and transparent manner.
 * DynamoDb provided by Amazon AWS was used to store the data to be shared.
 * Just the table name and a short description was stored in the blocks in the blockchain.
 
-![architecture](https://github.com/PrajwalRavi/MiniSQL/blob/master/architecure.png)
+![architecture](https://github.com/PrajwalRavi/Blockchain/blob/master/architecture.png)
 
 ### Future plans
 * Integrate this into a web-app using Django, enabling user accounts etc.
